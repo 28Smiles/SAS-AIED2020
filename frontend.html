@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body>
+    <div id="app">
+      <div class="card mb-3">
+        <div class="card-header">
+          References
+        </div>
+        <div class="card-body">
+          <div class="input-group mt-3">
+            <input type="text" v-model="reference.text" class="form-control">
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button" @click="addReference()">Add</button>
+            </div>
+          </div>
+          <table class="table">
+            <tr>
+              <th>#Nr</th>
+              <th>Reverence</th>
+              <th>Correct</th>
+              <th>Incorrect</th>
+              <th></th>
+            </tr>
+            <tr v-for="(ref, index) in references">
+              <th>{{ index }}</th>
+              <td>{{ ref.text }}</td>
+              <td>{{ ref.correct }}</td>
+              <td>{{ ref.incorrect }}</td>
+              <td><button type="button" class="btn btn-danger btn-sm" @click="removeReference(index)">Remove</button></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          Input
+        </div>
+        <div class="card-body">
+          <div class="input-group mt-3">
+            <input type="text" v-model="answer.text" id="inputEval" class="form-control">
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button" @click="eval()">Eval</button>
+            </div>
+          </div>
+          <div>
+            {{ answer.label }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let app = new Vue({
+      el: '#app',
+      data: {
+        references: [
+          {
+            text: 'The user must click on the red button, ignoring the prompt',
+            correct: 0,
+            incorrect: 0
+          }, 
+          {
+            text: 'Click on the red button, dismiss the prompt',
+            correct: 0,
+            incorrect: 0
+          }
+        ],
+        reference: {
+          text: '',
+          correct: 0,
+          incorrect: 0
+        },
+        answer: {
+          text: 'The User must Click Button and close prompt',
+          label: ''
+        }
+      },
+      methods: {
+        addReference() {
+          this.references.push(this.reference);
+          this.reference = '';
+        },
+        removeReference(index) {
+          this.references.splice(index, 1);
+        },
+        eval() {
+          this.references.forEach(e => {
+            axios.get('http://localhost:5000', {
+              params: {
+                reference: e.text,
+                answer: this.answer.text
+              }
+            }).then((response) => {
+              console.log(response)
+              e.correct = response.data.correct;
+              e.incorrect = response.data.incorrect + response.data.contradictory;
+              
+              cor = this.references.map(r => r.correct).reduce((pv, cv) => pv + cv, 0);
+              inc = this.references.map(r => r.incorrect).reduce((pv, cv) => pv + cv, 0);
+              if (cor > inc) {
+                this.answer.label = 'Correct';
+              } else {
+                this.answer.label = 'Incorrect';
+              }
+            });
+          })
+        }
+      }
+    })
+  </script>
+</html>

@@ -1,6 +1,7 @@
 import torch
 from transformers import *
 from flask import Flask, escape, request
+from flask_cors import CORS
 
 GPU_INFERENCE = True
 
@@ -16,6 +17,7 @@ if GPU_INFERENCE:
     MODEL = MODEL.cuda()
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def evaluate():
