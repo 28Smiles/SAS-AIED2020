@@ -58,8 +58,7 @@ def load_parameters(experiment):
         return json.load(json_file)
 
 
-def load_best(experiment, parts=['unseen_answers_en_accuracy_3_way', 'unseen_questions_en_accuracy_3_way',
-                                 'unseen_domains_en_accuracy_3_way']):
+def load_best(experiment, parts):
     log_data = parse(log(experiment))
     best_step, _ = max_key(scores(log_data, parts))
     parameters = load_parameters(experiment)
@@ -70,4 +69,4 @@ def load_best(experiment, parts=['unseen_answers_en_accuracy_3_way', 'unseen_que
     MODEL = MODEL_CLASS[2].from_pretrained(parameters['MODEL_NAME'], config=CONFIG)
     MODEL.load_state_dict(torch.load('logs/{}/model_{}.torch'.format(experiment, best_step), map_location='cpu'))
 
-    return log_data[best_step], MODEL, TOKENIZER
+    return best_step, log_data[best_step], MODEL, TOKENIZER
