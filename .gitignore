@@ -1,0 +1,9 @@
+*.torch
+*.xml
+*.zip
+*.bin
+.ipynb_checkpoints
+__pycache__
+*.csv
+*.iml
+.idea
