@@ -1,5 +1,7 @@
 # SAS-AIED2020
-The repository for the AIED Conference 2020
+The repository for the AIED Conference 2020. The Code quality is really bad and does not use the full power of the new transformers api. If creating something simmilar please use the Hugginface Trainer. 
+
+The Code allows you to train a model with the tested hyperparameters on the full dataset.
 
 ## Prerequisites
 Install the following dependencies:
